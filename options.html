@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="brand">
+        <div class="logo-large">PSA</div>
+        <span>Security Suite</span>
+      </div>
+      <ul class="nav-links">
+        <!-- Added data-section attributes -->
+        <li data-section="dashboard" class="nav-link active">Dashboard</li>
+        <li data-section="settings" class="nav-link">Settings</li>
+        <li data-section="howto" class="nav-link">How It Works</li>
+        <li data-section="security" class="nav-link">Security Model</li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      
+      <!-- SECTION: Dashboard -->
+      <section id="dashboard" class="section active-section">
+        <h1>System Overview</h1>
+        <div class="card-grid">
+          <div class="card highlight">
+            <h3>Threat Intelligence</h3>
+            <p>Active</p>
+            <span class="big-stat">ON</span>
+          </div>
+          <div class="card">
+            <h3>Algorithm</h3>
+            <p>Detection Engine</p>
+            <span class="big-stat">v3.0</span>
+          </div>
+          <div class="card">
+            <h3>Database</h3>
+            <p>HIBP Integration</p>
+            <span class="big-stat">OK</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: Settings -->
+      <section id="settings" class="section">
+        <h1>Configuration</h1>
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="info">
+              <h4>Breach Detection (HIBP)</h4>
+              <p>Check passwords against Have I Been Pwned database using K-Anonymity.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-hibp" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="info">
+              <h4>Real-time UI</h4>
+              <p>Show the floating strength meter on password fields.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-ui" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="info">
+              <h4>Animations</h4>
+              <p>Enable transition effects for the UI panel.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-anim" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: How to Use -->
+      <section id="howto" class="section">
+        <h1>User Guide</h1>
+        <div class="doc-block">
+          <h3>1. Installation</h3>
+          <p>Once installed, the extension works silently in the background. No configuration is required to start basic protection.</p>
+        </div>
+        <div class="doc-block">
+          <h3>2. Automatic Detection</h3>
+          <p>Navigate to any website with a password field (e.g., Gmail, GitHub). When you click the password box, our Security UI will appear automatically.</p>
+        </div>
+        <div class="doc-block">
+          <h3>3. Reading the Metrics</h3>
+          <ul>
+            <li><strong>Entropy:</strong> Measures randomness. Higher is better (aim for 60+).</li>
+            <li><strong>Crack Time:</strong> Estimated time to break the password using brute force.</li>
+            <li><strong>Breach Status:</strong> If red, change your password immediately.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION: Security Model -->
+      <section id="security" class="section">
+        <h1>Security Architecture</h1>
+        <div class="doc-block warning">
+          <h3>Zero-Knowledge Architecture</h3>
+          <p>We <strong>never</strong> store, transmit, or log your passwords. All analysis happens locally in your browser memory.</p>
+        </div>
+        <div class="doc-block">
+          <h3>K-Anonymity Model (HIBP)</h3>
+          <p>When checking for breaches, we never send your full password. We use the SHA-1 hash and send only the first 5 characters to the API.</p>
+          <div class="code-snippet">
+            <code>Request: https://api.pwnedpasswords.com/range/21BD1</code><br>
+            <code>Local Match: Checking remaining characters against response list.</code>
+          </div>
+          <p>This ensures the server can never identify your specific password.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

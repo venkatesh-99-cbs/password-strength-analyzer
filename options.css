@@ -1,0 +1,206 @@
+/* options.css */
+body {
+  background-color: #050505;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard {
+  display: flex;
+  width: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #0D0D0D;
+  border-right: 1px solid #222;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.logo-large {
+  width: 40px;
+  height: 40px;
+  background: #00FF41;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  border-radius: 8px;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-links li {
+  padding: 12px 15px;
+  margin: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #888;
+  transition: 0.2s;
+}
+
+.nav-links li:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.nav-links li.active {
+  background: rgba(0, 255, 65, 0.1);
+  color: #00FF41;
+  border-left: 3px solid #00FF41;
+}
+
+/* Main Content */
+.content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.section {
+  display: none; /* Hidden by default */
+}
+
+.active-section {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-size: 28px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+  margin-bottom: 30px;
+}
+
+/* Cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #222;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card h3 { margin: 0 0 10px; font-size: 14px; color: #888; }
+.card p { margin: 0 0 15px; font-size: 12px; color: #555; }
+.big-stat { font-size: 24px; font-weight: bold; color: #fff; }
+.card.highlight .big-stat { color: #00FF41; }
+
+/* Settings */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.setting-item {
+  background: #111;
+  border: 1px solid #222;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info h4 { margin: 0 0 5px; }
+.info p { margin: 0; font-size: 12px; color: #666; }
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #333;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider { background-color: #00FF41; }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* Documentation */
+.doc-block {
+  background: #111;
+  border-left: 3px solid #333;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.doc-block.warning {
+  border-color: #00FF41;
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.doc-block h3 { margin-top: 0; color: #fff; }
+.doc-block p { line-height: 1.6; font-size: 14px; color: #bbb; }
+.doc-block ul { padding-left: 20px; }
+.doc-block li { margin-bottom: 8px; color: #bbb; }
+
+.code-snippet {
+  background: #000;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: monospace;
+  color: #00FF41;
+  font-size: 12px;
+  margin: 10px 0;
+}
+
+
+/* Add this to options.css if not present */
+.nav-links li.active {
+  background: rgba(0, 255, 65, 0.1);
+  color: #00FF41 !important; /* Force text color */
+  border-left: 3px solid #00FF41;
+}

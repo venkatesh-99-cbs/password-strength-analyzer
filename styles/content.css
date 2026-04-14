@@ -1,0 +1,11 @@
+/* styles/content.css */
+/* Minimal global resets if Shadow DOM isolates correctly, 
+   but sometimes a high-z-index overlay is needed for the container itself. */
+
+#pwd-strength-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2147483647 !important; /* Max z-index */
+  pointer-events: none; /* Let clicks pass through if UI is not hovered */
+}

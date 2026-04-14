@@ -1,0 +1,30 @@
+
+---
+
+### 2. `.gitignore`
+This file tells Git to ignore certain files (junk files, system files, or sensitive keys) that shouldn't be uploaded to GitHub.
+
+Create a file named `.gitignore` (no file extension) in your main folder:
+
+```gitignore
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Dependency directories (if you use npm/node later)
+node_modules/
+
+# Build artifacts
+*.zip
+
+# Private keys (CRITICAL: Never upload your .pem key)
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
