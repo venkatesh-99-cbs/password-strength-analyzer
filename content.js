@@ -3,12 +3,10 @@
 (function() {
     'use strict';
 
-    // Initialize Classes from other files
     const analyzer = new PasswordAnalyzer();
     const checker = new HIBPChecker();
     const ui = new FloatingPanel();
 
-    // State Variables
     let activeInput = null;
     let debounceTimer = null;
     
@@ -36,19 +34,12 @@
         scanFields();
     }
 
-    /**
-     * STRICT DETECTION: Only target input fields with type="password"
-     */
     function scanFields() {
-        // REMOVED: input[type="text"]
         const inputs = document.querySelectorAll('input[type="password"]');
         inputs.forEach(attachListeners);
     }
 
-    function attachListeners(input) {
-        // Final Safety Check: Ensure it is definitely a password field
-        if (input.type !== 'password') return;
-
+       function attachListeners(input) {
         if (input.dataset.pwdAnalyzerAttached) return;
         input.dataset.pwdAnalyzerAttached = 'true';
 
@@ -57,32 +48,77 @@
                 activeInput = input;
                 ui.position(activeInput);
                 ui.show();
-                if (input.value) handleInput(input.value);
+                // If field is empty, show generic suggestions immediately
+                if (!input.value) {
+                    showDefaultSuggestions();
+                } else {
+                    handleInput(input.value);
+                }
             }
         }
 
+        // SHOW UI and SUGGESTIONS on focus
         input.addEventListener('focus', (e) => {
             if (!settings.enableUi) return;
+            
             activeInput = e.target;
             ui.position(activeInput);
             ui.show();
+
+            // If the user clicks into an empty field, show the best practices
+            if (!activeInput.value) {
+                showDefaultSuggestions();
+            } else {
+                // If there is already text, analyze it immediately
+                handleInput(activeInput.value);
+            }
         });
 
         input.addEventListener('blur', () => {
-            // UI stays visible until focused elsewhere or blurred
+            setTimeout(() => {
+                ui.hide();
+                activeInput = null;
+            }, 200);
         });
 
         input.addEventListener('input', (e) => {
             if (!settings.enableUi) return;
+            const password = e.target.value;
+            
+            updateLocalUI(password);
+
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                const password = e.target.value;
-                handleInput(password);
-            }, 300);
+                updateRemoteUI(password);
+            }, 400); 
         });
     }
 
-    async function handleInput(password) {
+    /**
+     * New Helper: Displays a "Welcome/Guide" state in the UI
+     */
+    function showDefaultSuggestions() {
+        const genericSuggestions = analyzer.getGenericSuggestions();
+        
+        // We create a "mock" result object that looks like a normal analysis
+        // but has 0 score and the generic tips.
+        const defaultResult = {
+            length: 0,
+            entropy: 0,
+            score: 0,
+            patterns: [],
+            crackTime: 'N/A',
+            suggestions: genericSuggestions
+        };
+        
+        ui.update(defaultResult, null);
+    }
+
+    /**
+     * INSTANT UPDATE: Handles Entropy, Score, and Crack Time.
+     * No 'await', no network, just pure math.
+     */
+    function updateLocalUI(password) {
         if (!activeInput) return;
 
         if (!password || password.length === 0) {
@@ -91,33 +127,43 @@
         }
 
         const result = analyzer.analyze(password);
-        let breachResult = null;
-        
-        if (settings.enableHibp && password.length >= 4) {
-            try {
-                breachResult = await checker.check(password);
-            } catch (e) {
-                console.warn("Breach check failed:", e);
-            }
-        }
-
-        ui.update(result, breachResult);
-        ui.position(activeInput);
+        // Update UI immediately with the local result (breach data stays as it was until API returns)
+        ui.update(result, null); 
     }
 
     /**
-     * Strictly monitor only password inputs being added to the DOM
+     * BACKGROUND UPDATE: Handles HIBP API check.
+     * This runs in the background and doesn't block the UI.
      */
+    async function updateRemoteUI(password) {
+        if (!activeInput || !settings.enableHibp || password.length < 4) return;
+
+        try {
+            const breachResult = await checker.check(password);
+            
+            // Once the API returns, we re-run the local analysis 
+            // to ensure the UI updates with the latest password and the new breach result.
+            const currentResult = analyzer.analyze(password);
+            ui.update(currentResult, breachResult);
+        } catch (e) {
+            console.warn("HIBP check failed:", e);
+        }
+    }
+
+    // Helper to combine the logic for initial focus
+    function handleInput(password) {
+        updateLocalUI(password);
+        updateRemoteUI(password);
+    }
+
     function observeDOM() {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1) { 
-                        // 1. If the added node itself is a password input
+                    if (node.nodeType === 1) {
                         if (node.tagName === 'INPUT' && node.type === 'password') {
                             attachListeners(node);
                         } else {
-                            // 2. Search for password inputs inside the added node
                             const inputs = node.querySelectorAll('input[type="password"]');
                             inputs.forEach(attachListeners);
                         }
@@ -125,7 +171,6 @@
                 });
             });
         });
-
         observer.observe(document.body, { childList: true, subtree: true });
     }
 

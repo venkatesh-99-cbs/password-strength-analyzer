@@ -34,7 +34,7 @@ class PasswordAnalyzer {
   }
 
   /**
-   * Shannon Entropy Calculation (approximated by character pool)
+   * Shannon Entropy Calculation
    */
   calculateEntropy(pwd) {
     if (!pwd) return 0;
@@ -48,9 +48,8 @@ class PasswordAnalyzer {
     if (hasLower) poolSize += 26;
     if (hasUpper) poolSize += 26;
     if (hasDigits) poolSize += 10;
-    if (hasSpecial) poolSize += 32; // Approx for common symbols
+    if (hasSpecial) poolSize += 32;
 
-    // Basic entropy formula: length * log2(poolSize)
     if (poolSize === 0) return 0;
     return pwd.length * Math.log2(poolSize);
   }
@@ -59,28 +58,22 @@ class PasswordAnalyzer {
     const found = [];
     const lowerPwd = pwd.toLowerCase();
 
-    // 1. Common passwords
     if (this.commonPasswords.includes(lowerPwd)) {
       found.push({ type: 'common', severity: 'high' });
     }
 
-    // 2. Repeated characters (e.g., 'aaaa')
     if (/(.)\1{2,}/.test(pwd)) {
       found.push({ type: 'repeated', severity: 'medium' });
     }
 
-    // 3. Sequential characters (e.g., '123', 'abc')
     if (/abc|bcd|cde|123|234|345|456|567|678|789|890/.test(lowerPwd)) {
       found.push({ type: 'sequential', severity: 'medium' });
     }
 
-    // 4. Keyboard patterns
     if (/qwerty|asdf|zxcv|qaz|wsx|edc/.test(lowerPwd)) {
       found.push({ type: 'keyboard_pattern', severity: 'high' });
     }
 
-    // 5. Dates (YYYYMMDD, MMDDYYYY, etc.)
-    // FIXED: Added parentheses around the regex test
     if (/(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])/.test(pwd)) {
       found.push({ type: 'date', severity: 'medium' });
     }
@@ -91,19 +84,16 @@ class PasswordAnalyzer {
   calculateScore(pwd, patterns, entropy) {
     let score = 0;
 
-    // Base score from entropy
     if (entropy > 10) score = 1;
     if (entropy > 25) score = 2;
     if (entropy > 40) score = 3;
     if (entropy > 60) score = 4;
 
-    // Penalties for patterns
     patterns.forEach(p => {
       if (p.severity === 'high') score = Math.max(0, score - 2);
       if (p.severity === 'medium') score = Math.max(0, score - 1);
     });
 
-    // Length bonus
     if (pwd.length >= 8) score = Math.min(4, score + 1);
     if (pwd.length >= 12) score = Math.min(4, score + 1);
 
@@ -111,7 +101,6 @@ class PasswordAnalyzer {
   }
 
   estimateCrackTime(entropy) {
-    // Assumption: 10 billion guesses per second (modern GPU offline attack)
     const guessesPerSecond = 10e9;
     const combinations = Math.pow(2, entropy);
     const seconds = combinations / guessesPerSecond;
@@ -135,6 +124,19 @@ class PasswordAnalyzer {
     if (patterns.find(p => p.type === 'sequential')) suggestions.push("Avoid sequential characters.");
     
     return suggestions;
+  }
+
+  /**
+   * Returns professional password best practices 
+   * to be shown when the user first focuses on the field.
+   */
+  getGenericSuggestions() {
+    return [
+      "🎯 Aim for at least 12-16 characters.",
+      "🔣 Mix Uppercase, Lowercase, Numbers, and Symbols.",
+      "🚫 Avoid common words, names, or birthdays.",
+      "🔑 Use a unique password for every account."
+    ];
   }
 }
 
